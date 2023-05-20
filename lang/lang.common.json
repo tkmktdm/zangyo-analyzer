@@ -1,0 +1,33 @@
+{
+  "bot": {
+    "name": "zangyo-analyzer",
+    "author": "4nm1tsu"
+  },
+  "emojis": {
+    "yes": "✅",
+    "no": "❌",
+    "enabled": "🟢",
+    "disabled": "🔴",
+    "info": "ℹ️",
+    "warning": "⚠️",
+    "previous": "◀️",
+    "next": "▶️",
+    "first": "⏪",
+    "last": "⏩",
+    "refresh": "🔄"
+  },
+  "colors": {
+    "default": "#0099ff",
+    "success": "#00ff83",
+    "warning": "#ffcc66",
+    "error": "#ff4a4a"
+  },
+  "links": {
+    "author": "https://github.com/4nm1tsu",
+    "source": "https://github.com/4nm1tsu/zangyo-analyzer",
+    "stream": "",
+    "support": "https://support.discord.com/",
+    "vote": "https://top.gg/",
+    "contribute": ""
+  }
+}
