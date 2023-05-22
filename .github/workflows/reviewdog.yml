@@ -1,0 +1,17 @@
+name: reviewdog
+on: [pull_request]
+jobs:
+  eslint:
+    name: runner / eslint
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v2
+      - uses: reviewdog/action-eslint@v1
+        with:
+          github_token: ${{ secrets.MY_GITHUB_TOKEN }}
+          reporter: github-pr-review
+          eslint_flags: 'src/'
+          fail_on_error: 'true'
