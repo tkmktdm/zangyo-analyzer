@@ -1,4 +1,7 @@
 import { REST } from '@discordjs/rest';
+import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone.js';
+import utc from 'dayjs/plugin/utc.js';
 import { Options, Partials } from 'discord.js';
 import { createRequire } from 'node:module';
 
@@ -36,6 +39,10 @@ import { Trigger } from './triggers/index.js';
 const require = createRequire(import.meta.url);
 let Config = require('../config/config.json');
 let Logs = require('../lang/logs.json');
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.tz.setDefault('Asia/Tokyo');
 
 async function start(): Promise<void> {
   // Services

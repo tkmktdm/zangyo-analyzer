@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { ChatInputCommandInteraction, EmbedBuilder, PermissionsString } from 'discord.js';
 
 import { VisualizeOption } from '../../enums/index.js';
@@ -29,7 +30,11 @@ export class VisualizeCommand implements Command {
           fields: [
             {
               name: 'test',
-              value: await ClientUtils.getKintaisSinceDate(intr.client, new Date()),
+              value: await ClientUtils.getKintaisSinceDate(
+                intr.client,
+                dayjs(new Date()).subtract(1, 'month').toDate(),
+                [intr.user.toString()]
+              ),
             },
           ],
         });
@@ -43,7 +48,11 @@ export class VisualizeCommand implements Command {
           fields: [
             {
               name: 'test',
-              value: await ClientUtils.getKintaisSinceDate(intr.client, new Date()),
+              value: await ClientUtils.getKintaisSinceDate(
+                intr.client,
+                dayjs(new Date()).subtract(1, 'month').toDate(),
+                [intr.user.toString()]
+              ),
             },
           ],
         });

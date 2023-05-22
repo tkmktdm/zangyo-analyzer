@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import {
   ApplicationCommand,
   Channel,
@@ -252,10 +253,11 @@ export class ClientUtils {
     ) as TextChannel | NewsChannel;
   }
 
-  private async createMessageCache(client: Client): Promise<void> {
-    client;
-  }
-
+  /**
+   * 検索対象Messageの一番はじめに出てくるEmojiTypeを返す
+   * @param message - 検索対象Message
+   * @returns EmojiType | null
+   */
   private static getIncludedEmojiType(message: Message): EmojiType | null {
     const emojis = Object.values(Emoji);
     let emojiType: EmojiType | null = null;
@@ -273,13 +275,18 @@ export class ClientUtils {
     return emojiType;
   }
 
-  //特定日時以降の[date:(ユーザ、スタンプ)]のarrayがほしい
-  public static async getKintaisSinceDate(client: Client, date: Date): Promise<any> {
-    //createMessageCache
-    date;
+  /**
+   * 勤怠のキャッシュを作成して保存後、最新の勤怠のリストを返す
+   * @param client
+   * @returns Promise<Array<Kintai>>
+   */
+  private static async createKintaisCache(client: Client): Promise<Array<Kintai>> {
     const kintaiRepository = KintaiRepositoryFactory.getInstance();
-    console.log(kintaiRepository.findAll());
+    let kintaisCache: Array<Kintai> = await kintaiRepository.findAll();
+    const dummy = { date: new Date(0), author: '', emoji: 0 };
+    let lastKintaiCache: Kintai = kintaisCache.length ? kintaisCache[0] : dummy;
 
+    // Channel取得
     let channel: Channel;
     try {
       channel = client.channels.cache.get(Config.channelId) as TextChannel;
@@ -298,39 +305,97 @@ export class ClientUtils {
         throw error;
       }
     }
-    let kintais: Array<Kintai> = [];
-    // 続けるかどうかは、最新のメッセージの日時で比較
-    // そのために、シリアライズしたファイルは日時でソートしておく
+
+    /** 取得したMessageの中で一番古いもの */
     let before: Message | null = null;
-    // TODO: cache読み込み
+    /** 大域脱出用一時変数 */
+    let exitSignal = false;
+    let newKintais = [];
     do {
-      // MESSAGE_FETCH_LIMIT個messageをfetch
+      // MESSAGE_FETCH_LIMIT個のMessageをfetch
       const messages = await channel.messages.fetch({
         limit: DiscordLimits.MESSAGE_FETCH_LIMIT,
         before: before ? before.id : null,
       });
       before = 0 < messages.size ? messages.at(messages.size - 1) : null;
-      console.log(messages.size);
 
-      // emojiを含んでいたらpush
       messages.forEach(message => {
         const emojiType = this.getIncludedEmojiType(message);
+        // emojiを含んでいる
         if (Object.values(Emoji).includes(emojiType)) {
-          kintais.push({
-            date: message.createdAt,
-            author: message.author.toString(),
-            emoji: emojiType,
-          });
+          // かつcacheが存在しないならpush
+          if (dayjs(message.createdAt).isAfter(lastKintaiCache.date)) {
+            newKintais.push({
+              date: dayjs.utc(message.createdAt).local().toDate(),
+              author: message.author.toString(),
+              emoji: emojiType,
+            });
+          } else {
+            exitSignal = true;
+          }
+        }
+        if (exitSignal) {
+          return;
         }
       });
-
       before = 0 < messages.size ? messages.at(messages.size - 1) : null;
-      // TODO: cacheの最新日時まで達していたらloop終了してcache作成
       // FIX: 1回余分にループしている
-    } while (before);
-    //cache作成
-    kintaiRepository.save(kintais)
+    } while (before && !exitSignal);
+    const kintais = newKintais.concat(kintaisCache);
+    kintaiRepository.save(kintais);
 
-    return kintais.toString().slice(0, DiscordLimits.EMBED_FIELD_VALUE_LENGTH);
+    return kintais;
+  }
+
+  /**
+   * authorsに含まれる人物の勤怠をフィルタ O(n)
+   * @param kintais - 勤怠のリスト
+   * @param authors - authorのリスト
+   * @returns Array<Kintai>
+   */
+  private static filterKintaisByAuthor(
+    kintais: Array<Kintai>,
+    authors: Array<string>
+  ): Array<Kintai> {
+    const filtered = kintais.filter(kintai => {
+      return authors.includes(kintai.author);
+    });
+    return filtered;
+  }
+
+  /**
+   * 指定日以降の勤怠をフィルタ O(logn)
+   * @param kintais - 勤怠のリスト
+   * @param date - 指定日
+   * @returns Array<Kintai>
+   */
+  private static binarySearchKintaisSince(kintais: Array<Kintai>, date: Date): Array<Kintai> {
+    /** 条件に当てはまるKintaiのindex */
+    let ok = -1;
+    /** 条件に当てはまらないKintaiのindex */
+    let ng = kintais.length;
+    while (Math.floor((ng - ok) / 2) > 1) {
+      let mid = Math.floor((ok + ng) / 2);
+      if (dayjs(kintais[mid].date).isAfter(date)) {
+        ok = mid;
+      } else {
+        ng = mid;
+      }
+    }
+
+    if (ok < 0) {
+      return [];
+    } else {
+      return kintais.slice(0, ok);
+    }
+  }
+
+  public static async getKintaisSinceDate(
+    client: Client,
+    date: Date,
+    authors: Array<string>
+  ): Promise<any> {
+    let kintais = await this.createKintaisCache(client);
+    return this.filterKintaisByAuthor(this.binarySearchKintaisSince(kintais, date), authors);
   }
 }

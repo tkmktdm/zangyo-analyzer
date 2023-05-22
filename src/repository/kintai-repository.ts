@@ -38,11 +38,11 @@ export default class KintaiRepository implements KintaiRepositoryInterface {
     }
 
     // Kintaiインスタンスにして配列に格納
-    let posts: Kintai[] = [];
+    let kintais: Kintai[] = [];
     for (const kintai of parsed) {
-      posts.push(kintai);
+      kintais.push(kintai);
     }
-    return posts;
+    return kintais;
   }
 
   //public async findSinceDate(date: Date): Kintai {}
