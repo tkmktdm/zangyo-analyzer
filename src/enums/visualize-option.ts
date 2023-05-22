@@ -1,3 +1,5 @@
 export enum VisualizeOption {
-  STRICT = 'STRICT',
+  PIE = 'PIE',
+  BAR = 'BAR',
+  RADAR = 'RADAR',
 }

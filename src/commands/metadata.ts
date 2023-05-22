@@ -52,7 +52,7 @@ export const ChatCommandMetadata: {
     options: [
       {
         ...Args.VISUALIZE_OPTION,
-        required: false,
+        required: true,
       },
     ],
   }

@@ -390,11 +390,12 @@ export class ClientUtils {
     }
   }
 
+  // TODO: 同日内の重複をなくす(:beer:は他のEmojiと重複可能)
   public static async getKintaisSinceDate(
     client: Client,
     date: Date,
     authors: Array<string>
-  ): Promise<any> {
+  ): Promise<Array<Kintai>> {
     let kintais = await this.createKintaisCache(client);
     return this.filterKintaisByAuthor(this.binarySearchKintaisSince(kintais, date), authors);
   }

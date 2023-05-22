@@ -46,9 +46,19 @@ export class Args {
     type: ApplicationCommandOptionType.String,
     choices: [
       {
-        name: Lang.getRef('visualizeOptions.strict', Language.Default),
-        name_localizations: Lang.getRefLocalizationMap('visualizeOptions.strict'),
-        value: VisualizeOption.STRICT,
+        name: Lang.getRef('visualizeOptions.pie', Language.Default),
+        name_localizations: Lang.getRefLocalizationMap('visualizeOptions.pie'),
+        value: VisualizeOption.PIE,
+      },
+      {
+        name: Lang.getRef('visualizeOptions.bar', Language.Default),
+        name_localizations: Lang.getRefLocalizationMap('visualizeOptions.bar'),
+        value: VisualizeOption.BAR,
+      },
+      {
+        name: Lang.getRef('visualizeOptions.radar', Language.Default),
+        name_localizations: Lang.getRefLocalizationMap('visualizeOptions.radar'),
+        value: VisualizeOption.RADAR,
       },
     ],
   };

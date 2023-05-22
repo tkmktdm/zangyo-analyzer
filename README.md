@@ -6,26 +6,17 @@ just a joke bot.
 
 - Visualize Zangyo rates.
 - Ranking the number of Zangyo.
+- Periodic notification batches.
 
 ## Commands
 
-### visualize
+> **Warning**
+> Specifications are subject to change in the future.
 
-```
-/visualize OPTION{strict}(optional)
-```
-
-### ranking
-
-```
-/ranking ARGS{zangyo,yukyu,teiji,nomikai}(required)
-```
-
-### setting
-
-```
-/setting visualize ARGS{strict,flexible}(required)
-```
+- `visualize`
+  - pie chart
+  - radar chart
+  - bar chart
 
 ## Setup
 

@@ -239,7 +239,9 @@
       "dev": "Dev"
     },
     "visualizeOptions": {
-      "strict": "Strict"
+      "pie": "Pie",
+      "bar": "Bar",
+      "radar": "Radar"
     },
     "yesNo": {
       "yes": "Yes",
