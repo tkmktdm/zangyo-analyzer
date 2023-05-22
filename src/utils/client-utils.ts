@@ -1,12 +1,14 @@
 import {
   ApplicationCommand,
   Channel,
+  ChannelType,
   Client,
   DiscordAPIError,
   RESTJSONErrorCodes as DiscordApiErrors,
   Guild,
   GuildMember,
   Locale,
+  Message,
   NewsChannel,
   Role,
   StageChannel,
@@ -14,8 +16,12 @@ import {
   User,
   VoiceChannel,
 } from 'discord.js';
+import { createRequire } from 'node:module';
 
 import { PermissionUtils, RegexUtils } from './index.js';
+import { DiscordLimits, Emoji, EmojiType, toAlias } from '../constants/index.js';
+import { KintaiRepositoryFactory } from '../factory/kintai-repository-factory.js';
+import { Kintai } from '../models/kintai.js';
 import { Lang } from '../services/index.js';
 
 const FETCH_MEMBER_LIMIT = 20;
@@ -28,6 +34,9 @@ const IGNORED_ERRORS = [
   DiscordApiErrors.UnknownInteraction,
   DiscordApiErrors.MissingAccess,
 ];
+
+const require = createRequire(import.meta.url);
+let Config = require('../../config/config.json');
 
 export class ClientUtils {
   public static async getGuild(client: Client, discordId: string): Promise<Guild> {
@@ -241,5 +250,87 @@ export class ClientUtils {
         PermissionUtils.canSend(channel, true) &&
         Lang.getRegex('channelRegexes.bot', langCode).test(channel.name)
     ) as TextChannel | NewsChannel;
+  }
+
+  private async createMessageCache(client: Client): Promise<void> {
+    client;
+  }
+
+  private static getIncludedEmojiType(message: Message): EmojiType | null {
+    const emojis = Object.values(Emoji);
+    let emojiType: EmojiType | null = null;
+    let minIndex = Infinity;
+    for (const emoji of emojis) {
+      const alias = toAlias(emoji);
+      if (message.content.includes(alias)) {
+        const index = message.content.indexOf(alias);
+        if (minIndex > index) {
+          minIndex = index;
+          emojiType = emoji;
+        }
+      }
+    }
+    return emojiType;
+  }
+
+  //特定日時以降の[date:(ユーザ、スタンプ)]のarrayがほしい
+  public static async getKintaisSinceDate(client: Client, date: Date): Promise<any> {
+    //createMessageCache
+    date;
+    const kintaiRepository = KintaiRepositoryFactory.getInstance();
+    console.log(kintaiRepository.findAll());
+
+    let channel: Channel;
+    try {
+      channel = client.channels.cache.get(Config.channelId) as TextChannel;
+      if (channel.type.valueOf() !== ChannelType.GuildText) {
+        throw Error('The specified channel is not text channel.');
+      }
+    } catch (error) {
+      if (
+        error instanceof DiscordAPIError &&
+        typeof error.code == 'number' &&
+        IGNORED_ERRORS.includes(error.code)
+      ) {
+        return;
+      } else {
+        console.log(error);
+        throw error;
+      }
+    }
+    let kintais: Array<Kintai> = [];
+    // 続けるかどうかは、最新のメッセージの日時で比較
+    // そのために、シリアライズしたファイルは日時でソートしておく
+    let before: Message | null = null;
+    // TODO: cache読み込み
+    do {
+      // MESSAGE_FETCH_LIMIT個messageをfetch
+      const messages = await channel.messages.fetch({
+        limit: DiscordLimits.MESSAGE_FETCH_LIMIT,
+        before: before ? before.id : null,
+      });
+      before = 0 < messages.size ? messages.at(messages.size - 1) : null;
+      console.log(messages.size);
+
+      // emojiを含んでいたらpush
+      messages.forEach(message => {
+        const emojiType = this.getIncludedEmojiType(message);
+        if (Object.values(Emoji).includes(emojiType)) {
+          kintais.push({
+            date: message.createdAt,
+            author: message.author.toString(),
+            emoji: emojiType,
+          });
+        }
+      });
+
+      before = 0 < messages.size ? messages.at(messages.size - 1) : null;
+      // TODO: cacheの最新日時まで達していたらloop終了してcache作成
+      // FIX: 1回余分にループしている
+    } while (before);
+    //cache作成
+    kintaiRepository.save(kintais)
+
+    return kintais.toString().slice(0, DiscordLimits.EMBED_FIELD_VALUE_LENGTH);
   }
 }

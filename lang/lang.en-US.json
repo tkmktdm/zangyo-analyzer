@@ -19,7 +19,9 @@
             "value": [
               "To see the available commands, just type `/` and select the bot from the left side. You can then scroll through all available commands. Some commands may be hidden if you don't have permission to view them.",
               "",
-              "{{CMD_LINK_INFO}} - {{REF:commandDescs.info}}"
+              "{{CMD_LINK_INFO}} - {{REF:commandDescs.info}}",
+              "{{CMD_LINK_HELP}} - {{REF:commandDescs.help}}",
+              "{{CMD_LINK_VISUALIZE}} - {{REF:commandDescs.visualize}}"
             ]
           },
           {
@@ -153,7 +155,7 @@
     "chatCommands": {
       "help": "help",
       "info": "info",
-      "test": "test"
+      "visualize": "visualize"
     },
     "userCommands": {
       "viewDateJoined": "View Date Joined"
@@ -166,7 +168,8 @@
     },
     "commandDescs": {
       "help": "Find help or contact support.",
-      "info": "View bot info."
+      "info": "View bot info.",
+      "visualize": "visualize zangyo status."
     },
     "argDescs": {
       "helpOption": "Option.",
@@ -234,6 +237,9 @@
     "infoOptions": {
       "about": "About",
       "dev": "Dev"
+    },
+    "visualizeOptions": {
+      "strict": "Strict"
     },
     "yesNo": {
       "yes": "Yes",

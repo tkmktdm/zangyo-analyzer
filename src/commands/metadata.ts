@@ -41,6 +41,21 @@ export const ChatCommandMetadata: {
       },
     ],
   },
+  SETTINGS: {
+    type: ApplicationCommandType.ChatInput,
+    name: Lang.getRef('chatCommands.visualize', Language.Default),
+    name_localizations: Lang.getRefLocalizationMap('chatCommands.visualize'),
+    description: Lang.getRef('commandDescs.visualize', Language.Default),
+    description_localizations: Lang.getRefLocalizationMap('commandDescs.visualize'),
+    dm_permission: true,
+    default_member_permissions: undefined,
+    options: [
+      {
+        ...Args.VISUALIZE_OPTION,
+        required: false,
+      },
+    ],
+  }
 };
 
 export const MessageCommandMetadata: {

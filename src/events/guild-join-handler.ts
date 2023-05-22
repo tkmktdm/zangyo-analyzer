@@ -39,6 +39,18 @@ export class GuildJoinHandler implements EventHandler {
               Lang.getRef('chatCommands.help', Language.Default)
             )
           ),
+          CMD_LINK_INFO: FormatUtils.commandMention(
+            await ClientUtils.findAppCommand(
+              guild.client,
+              Lang.getRef('chatCommands.info', Language.Default)
+            )
+          ),
+          CMD_LINK_VISUALIZE: FormatUtils.commandMention(
+            await ClientUtils.findAppCommand(
+              guild.client,
+              Lang.getRef('chatCommands.visualize', Language.Default)
+            )
+          ),
         }).setAuthor({
           name: guild.name,
           iconURL: guild.iconURL(),
@@ -55,6 +67,18 @@ export class GuildJoinHandler implements EventHandler {
             await ClientUtils.findAppCommand(
               guild.client,
               Lang.getRef('chatCommands.help', Language.Default)
+            )
+          ),
+          CMD_LINK_INFO: FormatUtils.commandMention(
+            await ClientUtils.findAppCommand(
+              guild.client,
+              Lang.getRef('chatCommands.info', Language.Default)
+            )
+          ),
+          CMD_LINK_VISUALIZE: FormatUtils.commandMention(
+            await ClientUtils.findAppCommand(
+              guild.client,
+              Lang.getRef('chatCommands.visualize', Language.Default)
             )
           ),
         }).setAuthor({

@@ -1,6 +1,6 @@
 import { APIApplicationCommandBasicOption, ApplicationCommandOptionType } from 'discord.js';
 
-import { HelpOption, InfoOption } from '../enums/index.js';
+import { HelpOption, InfoOption, VisualizeOption } from '../enums/index.js';
 import { Language } from '../models/enum-helpers/index.js';
 import { Lang } from '../services/index.js';
 
@@ -35,6 +35,20 @@ export class Args {
         name: Lang.getRef('infoOptions.dev', Language.Default),
         name_localizations: Lang.getRefLocalizationMap('infoOptions.dev'),
         value: InfoOption.DEV,
+      },
+    ],
+  };
+  public static readonly VISUALIZE_OPTION: APIApplicationCommandBasicOption = {
+    name: Lang.getRef('arguments.option', Language.Default),
+    name_localizations: Lang.getRefLocalizationMap('arguments.option'),
+    description: Lang.getRef('argDescs.helpOption', Language.Default),
+    description_localizations: Lang.getRefLocalizationMap('argDescs.helpOption'),
+    type: ApplicationCommandOptionType.String,
+    choices: [
+      {
+        name: Lang.getRef('visualizeOptions.strict', Language.Default),
+        name_localizations: Lang.getRefLocalizationMap('visualizeOptions.strict'),
+        value: VisualizeOption.STRICT,
       },
     ],
   };
