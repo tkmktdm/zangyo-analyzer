@@ -55,7 +55,7 @@ export const ChatCommandMetadata: {
         required: true,
       },
     ],
-  }
+  },
 };
 
 export const MessageCommandMetadata: {
