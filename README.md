@@ -1,8 +1,12 @@
 # zangyo-analyzer
 
-![zangyo](images/zangyo.png)
-
-just a joke bot.
+<p align="center">
+    <img alt="Logo" src="images/zangyo.png" height="240" />
+  <p align="center">just a joke bot</p>
+  <p align="center">
+    <a href="https://hub.docker.com/r/4nm1tsu/zangyo-analyzer/tags"><img alt="Docker Hub" src="http://dockeri.co/image/4nm1tsu/zangyo-analyzer"></a>
+  </p>
+</p>
 
 ## Features
 
