@@ -19,5 +19,6 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
+          platforms: linux/arm64
           push: true
           tags: 4nm1tsu/zangyo-analyzer:latest
