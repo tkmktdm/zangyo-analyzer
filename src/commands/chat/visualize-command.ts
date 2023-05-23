@@ -63,8 +63,10 @@ export class VisualizeCommand implements Command {
 
         // TODO: descriptionを期間に
         embed = new EmbedBuilder({
-          title: 'Pie Chart',
-          description: `${intr.user.username}`,
+          title: `${intr.user.username}`,
+          description: Object.values(data)
+            .map((value, index) => `${keys[index]}: ` + `${value}`)
+            .join('\n'),
           image: {
             url: chart.getUrl(),
           },
