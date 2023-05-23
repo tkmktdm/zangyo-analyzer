@@ -1,6 +1,6 @@
 # zangyo-analyzer
 
-![zangyo](https://github.com/4nm1tsu/zangyo-analyzer/assets/40907120/cb843bfa-192f-414a-bbb3-89d9346ef052)
+![zangyo](images/zangyo.png)
 
 just a joke bot.
 
