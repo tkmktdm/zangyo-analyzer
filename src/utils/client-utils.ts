@@ -264,10 +264,14 @@ export class ClientUtils {
     let minIndex = Infinity;
     for (const emoji of emojis) {
       const alias = toAlias(emoji);
-      if (message.content.includes(alias)) {
-        const index = message.content.indexOf(alias);
-        if (minIndex > index) {
-          minIndex = index;
+      const condition = (e): boolean => {
+        return message.content.includes(e);
+      };
+      if (alias.some(condition)) {
+        const aliasIndex = alias.findIndex(condition);
+        const contentIndex = message.content.indexOf(alias[aliasIndex]);
+        if (minIndex > contentIndex) {
+          minIndex = contentIndex;
           emojiType = emoji;
         }
       }

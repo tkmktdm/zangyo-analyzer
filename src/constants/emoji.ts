@@ -8,16 +8,16 @@ export const Emoji = {
 export type EmojiType = (typeof Emoji)[keyof typeof Emoji];
 // type Emoji = 0 | 1 | 2 | 3 と同等
 
-export function toAlias(emojiType: EmojiType): string {
+export function toAlias(emojiType: EmojiType): Array<string> {
   switch (emojiType) {
     case Emoji.ZANGYO:
-      return ':zangyo:';
+      return [':zangyo:'];
     case Emoji.TEIJI:
-      return ':teiji:';
+      return [':teiji:'];
     case Emoji.YUKYU:
-      return ':yukyu:';
+      return [':yukyu:'];
     case Emoji.NOMIKAI:
-      return '🍺';
+      return ['🍺', '🍻'];
   }
 }
 
