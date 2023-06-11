@@ -33,3 +33,16 @@ export function toColors(emojiType: EmojiType): string {
       return '#ffc22a';
   }
 }
+
+export function toOutLabelsColors(emojiType: EmojiType): string {
+  switch (emojiType) {
+    case Emoji.ZANGYO:
+      return '#ffffff';
+    case Emoji.TEIJI:
+      return '#000000';
+    case Emoji.YUKYU:
+      return '#ffffff';
+    case Emoji.NOMIKAI:
+      return '#000000';
+  }
+}

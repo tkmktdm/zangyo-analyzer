@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import { ChatInputCommandInteraction, EmbedBuilder, PermissionsString } from 'discord.js';
 import { createRequire } from 'node:module';
 
-import { Emoji, toColors } from '../../constants/emoji.js';
+import { Emoji, toColors, toOutLabelsColors } from '../../constants/emoji.js';
 import { VisualizeOption } from '../../enums/index.js';
 import { Language } from '../../models/enum-helpers/index.js';
 import { EventData } from '../../models/internal-models.js';
@@ -28,6 +28,7 @@ export class VisualizeCommand implements Command {
     /** 凡例 */
     const keys: Array<string> = Object.keys(Emoji);
     const colors: Array<string> = Object.values(Emoji).map(toColors);
+    const outLabelsColors: Array<string> = Object.values(Emoji).map(toOutLabelsColors);
 
     switch (args.option) {
       case VisualizeOption.PIE: {
@@ -47,9 +48,10 @@ export class VisualizeCommand implements Command {
         }
         chart
           .setConfig({
-            type: 'pie',
+            type: 'outlabeledPie',
             data: {
               labels: keys,
+              fontSize: 20,
               datasets: [
                 {
                   data: Object.values(data),
@@ -57,9 +59,24 @@ export class VisualizeCommand implements Command {
                 },
               ],
             },
+            options: {
+              plugins: {
+                legend: false,
+                outlabels: {
+                  text: '%l %v (%p)',
+                  color: outLabelsColors,
+                  stretch: 20,
+                  font: {
+                    resizable: true,
+                    minSize: 12,
+                    maxSize: 18,
+                  },
+                },
+              },
+            },
           })
-          .setWidth(1600)
-          .setHeight(800);
+          .setWidth(400)
+          .setHeight(400);
 
         // TODO: descriptionを期間に
         embed = new EmbedBuilder({
