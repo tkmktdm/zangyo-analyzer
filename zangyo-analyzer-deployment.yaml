@@ -1,0 +1,207 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: zangyo-analyzer
+  labels:
+    name: zangyo-analyzer
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-json
+  namespace: zangyo-analyzer
+data:
+  config.json: |-
+    {
+      "developers": ["<YOUR_DISCORD_ID>"],
+      "channelId": "<CHANNEL_ID>",
+      "client": {
+        "id": "<DISCORD_BOT_ID>",
+        "token": "<DISCORD_BOT_TOKEN>",
+        "intents": [
+          "Guilds",
+          "GuildMessages",
+          "GuildMessageReactions",
+          "DirectMessages",
+          "DirectMessageReactions"
+        ],
+        "partials": ["Message", "Channel", "Reaction"],
+        "caches": {
+          "BaseGuildEmojiManager": 0,
+          "GuildBanManager": 0,
+          "GuildInviteManager": 0,
+          "GuildStickerManager": 0,
+          "MessageManager": 0,
+          "PresenceManager": 0,
+          "StageInstanceManager": 0,
+          "ThreadManager": 0,
+          "ThreadMemberManager": 0,
+          "VoiceStateManager": 0
+        }
+      },
+      "api": {
+        "port": 3001,
+        "secret": "00000000-0000-0000-0000-000000000000"
+      },
+      "sharding": {
+        "spawnDelay": 5,
+        "spawnTimeout": 300,
+        "serversPerShard": 1000
+      },
+      "clustering": {
+        "enabled": false,
+        "shardCount": 16,
+        "callbackUrl": "http://localhost:3001/",
+        "masterApi": {
+          "url": "http://localhost:5000/",
+          "token": "00000000-0000-0000-0000-000000000000"
+        }
+      },
+      "jobs": {
+        "updateServerCount": {
+          "schedule": "0 */10 * * * *",
+          "log": false
+        }
+      },
+      "rateLimiting": {
+        "commands": {
+          "amount": 10,
+          "interval": 30
+        },
+        "buttons": {
+          "amount": 10,
+          "interval": 30
+        },
+        "triggers": {
+          "amount": 10,
+          "interval": 30
+        },
+        "reactions": {
+          "amount": 10,
+          "interval": 30
+        }
+      },
+      "logging": {
+        "pretty": true,
+        "rateLimit": {
+          "minTimeout": 30
+        }
+      }
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bot-sites-json
+  namespace: zangyo-analyzer
+data:
+  bot-sites.json: |-
+    [
+      {
+        "name": "top.gg",
+        "enabled": false,
+        "url": "https://top.gg/api/bots/<BOT_ID>/stats",
+        "authorization": "<TOKEN>",
+        "body": "{\"server_count\":{{SERVER_COUNT}}}"
+      },
+      {
+        "name": "bots.ondiscord.xyz",
+        "enabled": false,
+        "url": "https://bots.ondiscord.xyz/bot-api/bots/<BOT_ID>/guilds",
+        "authorization": "<TOKEN>",
+        "body": "{\"guildCount\":{{SERVER_COUNT}}}"
+      },
+      {
+        "name": "discord.bots.gg",
+        "enabled": false,
+        "url": "https://discord.bots.gg/api/v1/bots/<BOT_ID>/stats",
+        "authorization": "<TOKEN>",
+        "body": "{\"guildCount\":{{SERVER_COUNT}}}"
+      },
+      {
+        "name": "discordbotlist.com",
+        "enabled": false,
+        "url": "https://discordbotlist.com/api/bots/<BOT_ID>/stats",
+        "authorization": "Bot <TOKEN>",
+        "body": "{\"guilds\":{{SERVER_COUNT}}}"
+      },
+      {
+        "name": "bots.discordlabs.org",
+        "enabled": false,
+        "url": "https://bots.discordlabs.org/v2/bot/<BOT_ID>/stats",
+        "authorization": null,
+        "body": "{\"token\":\"discordlabs.org-<TOKEN>\",\"server_count\":\"{{SERVER_COUNT}}\"}"
+      },
+      {
+        "name": "discords.com",
+        "enabled": false,
+        "url": "https://discords.com/bots/api/bot/<BOT_ID>",
+        "authorization": "<TOKEN>",
+        "body": "{\"server_count\":{{SERVER_COUNT}}}"
+      },
+      {
+        "name": "disforge.com",
+        "enabled": false,
+        "url": "https://disforge.com/api/botstats/<BOT_ID>",
+        "authorization": "<TOKEN>",
+        "body": "{\"servers\":{{SERVER_COUNT}}}"
+      }
+    ]
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: debug-json
+  namespace: zangyo-analyzer
+data:
+  debug.json: |-
+    {
+      "override": {
+        "shardMode": {
+          "enabled": false,
+          "value": "worker"
+        }
+      },
+      "dummyMode": {
+        "enabled": false,
+        "whitelist": ["212772875793334272", "478288246858711040"]
+      }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zangyo-analyzer-deployment
+  namespace: zangyo-analyzer
+spec:
+  selector:
+    matchLabels:
+      app: zangyo-analyzer-pod
+  replicas: 1
+  template:
+    metadata:
+      name: zangyo-analyzer-pod
+      namespace: zangyo-analyzer
+      labels:
+        app: zangyo-analyzer-pod
+    spec:
+      containers:
+        - name: zangyo-analyzer-container
+          image: 4nm1tsu/zangyo-analyzer:latest
+          env:
+            - name: zangyo-analyzer-container
+          ports:
+            - containerPort: 3001
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/config
+      volumes:
+        - name: config-volume
+          projected:
+            sources:
+              - configMap:
+                  name: config-json
+              - configMap:
+                  name: bot-sites-json
+              - configMap:
+                  name: debug-json

@@ -17,7 +17,7 @@ export function toAlias(emojiType: EmojiType): Array<string> {
     case Emoji.YUKYU:
       return [':yukyu:'];
     case Emoji.NOMIKAI:
-      return ['🍺', '🍻'];
+      return ['🍺', '🍻', '🍷', '🍶', '🥃'];
   }
 }
 

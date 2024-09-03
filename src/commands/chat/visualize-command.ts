@@ -75,7 +75,7 @@ export class VisualizeCommand implements Command {
               },
             },
           })
-          .setWidth(400)
+          .setWidth(500)
           .setHeight(400);
 
         // TODO: descriptionを期間に
